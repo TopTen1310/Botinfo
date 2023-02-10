@@ -1,23 +1,4 @@
-# ChatGPT AI Chatbot App
-
-<img src = "chat_gpt_1.png">
-<p>
-A Chatbot chat app built using the Flutter framework and OpenAI's GPT-3 language model.
-</p>
-
-### Show some :heart: and star the repo.
-
-## [Video tutorial available here](https://youtu.be/94JmNb1IhX0)
-
-#### [Subscribe to Codepur](https://youtube.com/hellocodepur)
-
-## Features
-
-- Natural language understanding
-- Human-like conversation
-- Customizable to fit your use-case
-- Lightweight, easy to integrate with other apps
-- Open-source
+# Botinfo
 
 ## Prerequisites
 
