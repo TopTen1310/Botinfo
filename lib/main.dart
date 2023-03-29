@@ -2,11 +2,11 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:Botinfo/SharedPreference.dart';
-import 'package:Botinfo/chat_screen.dart';
 import 'package:Botinfo/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import 'chat_screen.dart';
 
 void main() {
   HttpOverrides.global = MyHttpOverrides();
@@ -41,8 +41,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   checkNewUser() async {
-    String newUser = await SharedPreference.getStringValuesSF("newUser");
-    Constant.newUser = newUser;
     Timer(
         Duration(seconds: 3),
         () => Navigator.pushReplacement(
@@ -138,6 +136,7 @@ class SecondScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
+                      // Get.to(ChatScreen());
                       Get.to(ChatScreen());
                     },
                     child: Container(
