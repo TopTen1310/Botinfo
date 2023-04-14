@@ -10,9 +10,9 @@ class ChatMessage extends StatelessWidget {
       required this.sender,
       this.isImage = false});
 
-  final String text;
-  final String sender;
   final bool isImage;
+  final String sender;
+  final String text;
 
   @override
   Widget build(BuildContext context) {

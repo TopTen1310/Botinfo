@@ -2,7 +2,10 @@
 
 import 'dart:async';
 import 'dart:io';
+
 import 'package:lottie/lottie.dart';
+
+
 import '/constants.dart';
 import '/dio_api_client.dart';
 import 'package:flutter/foundation.dart';
@@ -10,21 +13,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+
 import 'chat35model.dart';
 import 'chatmessage.dart';
 
-class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+class ChatScreen2 extends StatefulWidget {
+  const ChatScreen2({super.key});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  State<ChatScreen2> createState() => _ChatScreen2State();
 }
 
 enum TtsState { playing, stopped, paused, continued, ready, reset }
 
-class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
+class _ChatScreen2State extends State<ChatScreen2> with TickerProviderStateMixin {
   final TextEditingController textController = TextEditingController();
   final List<ChatMessage> _messages = [];
+
+  // ChatGPT? chatGPT;
   bool _isImageSearch = false;
   SpeechToText speechToText = SpeechToText();
   var text = 'Ask anything to Botinfo';
@@ -53,14 +59,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool get isWindows => !kIsWeb && Platform.isWindows;
 
   bool get isWeb => kIsWeb;
-  bool _speechEnabled = false;
 
   initTts() async {
+    flutterTts = FlutterTts();
     flutterTts = FlutterTts();
     await flutterTts.setSharedInstance(true);
 
     _setAwaitOptions();
-    print('hfgggfs');
     await flutterTts.setIosAudioCategory(
         IosTextToSpeechAudioCategory.playback,
         [
@@ -73,10 +78,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     await flutterTts.awaitSynthCompletion(true);
 
     if (isAndroid) {
-      print('Android..............');
       _getDefaultEngine();
       _getDefaultVoice();
-      // getLanguages();
     }
 
     flutterTts.setStartHandler(() {
@@ -95,6 +98,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     }
 
     flutterTts.setCompletionHandler(() async{
+
         print("Complete");
         ttsState = TtsState.stopped;
         await flutterTts.stop();
@@ -102,6 +106,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         _isTyping = false;
         ttsState = TtsState.reset;
         setState(() {});
+
     });
 
     flutterTts.setCancelHandler(() {
@@ -133,13 +138,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     });
   }
 
-  getLanguages() async {
-    List language = await flutterTts.getLanguages;
-    await flutterTts.setLanguage("gu-IN");
-    print('language');
-    print(language.length);
-    print(language);
-  }
+  Future<dynamic> _getLanguages() async => await flutterTts.getLanguages;
 
   Future<dynamic> _getEngines() async => await flutterTts.getEngines;
 
@@ -153,7 +152,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   Future _getDefaultVoice() async {
     var voice = await flutterTts.getDefaultVoice;
     if (voice != null) {
-      print('Voice.............');
       print(voice);
     }
   }
@@ -162,6 +160,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     await flutterTts.setVolume(volume);
     await flutterTts.setSpeechRate(rate);
     await flutterTts.setPitch(pitch);
+
     if (_newVoiceText != null) {
       if (_newVoiceText!.isNotEmpty) {
         await flutterTts.speak(_newVoiceText!);
@@ -193,16 +192,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _nwavecontroller.dispose();
     _controllerListening.dispose();
 
-    Constant.newUser = '1';
+    Constant.newUser = "1";
+
   }
 
   @override
   void initState() {
     super.initState();
     ttsState = TtsState.reset;
-
-    _initSpeech();
     initTts();
+
     _controller = AnimationController(vsync: this)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
@@ -210,7 +209,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           _controller.forward();
         }
       });
-    print('99999999');
+
     _controllerListening = AnimationController(vsync: this)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
@@ -228,36 +227,28 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       });
   }
 
-  void _initSpeech() async {
-    _speechEnabled = await speechToText.initialize();
-    setState(() {});
-  }
-
   Rx<Chat35Model> cm = Chat35Model().obs;
 
   Future<void> chatAPI() async {
-    //   var jsonData2 = {
-    //   "model": "text-davinci-003",
-    //   "prompt": textController.text,
-    //   "temperature": 0.9,
-    //   "max_tokens": 150,
-    //   "top_p": 1,
-    //   "frequency_penalty": 0.0,
-    //   "presence_penalty": 0.6,
-    //   "stop": [" Human:", " AI:"]
-    // };
-     
+  //    var jsonData2 = {
+  //     "model": "text-davinci-003",
+  //     "prompt": textController.text,
+  //     "temperature": 0.9,
+  //     "max_tokens": 150,
+  //     "top_p": 1,
+  //     "frequency_penalty": 0.0,
+  //     "presence_penalty": 0.6,
+  //     "stop": [" Human:", " AI:"]
+  //   };
   //   final response = await DioResponse.postApi(
   //       'https://api.openai.com/v1/completions', jsonData2);
-  //   print("response 0000");
-  //   print(response);
   //   if (response != null) {
-  //     cm.value = chatModel.fromJson(response.data);
+  //     cm.value = chatModel.fromJson(response?.data);
   //   } else {
   //     cm.value = chatModel.fromJson({});
   //   }
   // }
-   var jsonData2 = {
+    var jsonData2 = {
       "model": "gpt-3.5-turbo",
       "messages": [
         {
@@ -266,7 +257,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         }
       ]
     };
-   final response = await DioResponse.postApi(
+     final response = await DioResponse.postApi(
         'https://api.openai.com/v1/chat/completions', jsonData2);
 
     print("response 0000");
@@ -279,7 +270,21 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _sendMessage() async {
+    //
+    // print("textController.text 00");
+    // print(textController.text);
+    textController.text = "hello";
+
     if (textController.text.isEmpty) {
+
+      // _isTyping = true;
+      // isListing = false;
+      //
+      // textController.clear();
+      //
+      // insertNewData('Please say something.');
+      // // ttsState = TtsState.ready;
+      // flutterTts.speak('Please say something.');
       return;
     }
     ChatMessage message = ChatMessage(
@@ -299,11 +304,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
     textController.clear();
 
-    insertNewData(
-        cm.value.choices?[0].message?.content ?? 'Please reset and try again.');
+    insertNewData(cm.value.choices?[0].message?.content  ?? 'Please reset and try again.');
     ttsState = TtsState.stopped;
-    flutterTts.speak(
-        cm.value.choices?[0].message?.content  ??  'Please reset and try again.');
+    flutterTts
+        .speak(cm.value.choices?[0].message?.content ?? 'Please reset and try again.');
   }
 
   void insertNewData(String response, {bool isImage = false}) {
@@ -352,8 +356,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     style: TextStyle(
                       fontSize: 25.0,
                       color: Colors.white,
-                    ),
-                )
+                    ))
               ],
             ),
             Expanded(
@@ -389,8 +392,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                   isListing = true;
                                   _controller.reset();
                                   _controller.forward();
-
-                                  if (_speechEnabled) {
+                                  var available =
+                                      await speechToText.initialize();
+                                  if (available) {
                                     setState(() {
                                       isListing = true;
                                       speechToText.listen(onResult: (result) {
@@ -408,8 +412,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                   _controller.reset();
                                   speechToText.stop();
                                   _controller.stop(canceled: false);
+
+
                                   _sendMessage();
                                 }
+
                                 return;
                               },
                               child: Stack(
@@ -493,7 +500,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             ),
                             GestureDetector(
                               onTap: () {
-                                return;
+
+return;
                                 print("fhdskl");
                                 print("_isTyping");
                                 print(_isTyping);
@@ -504,9 +512,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                 }
 
                                 if (ttsState == TtsState.stopped) {
-                                  flutterTts.speak(
-                                      cm.value.choices?[0].message?.content  ?? 
-                                          'Please reset and try again.');
+                                  flutterTts.speak(cm.value.choices?[0].message?.content ??
+                                      'Please reset and try again.');
                                   return;
                                 }
 
@@ -515,10 +522,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                   return;
                                 }
 
-                                flutterTts.speak(
-                                    cm.value.choices?[0].message?.content ??
-                                    cm.value.choices?[0].message?.content  ??
-                                        'Please reset and try again.');
+                                flutterTts.speak(cm.value.choices?[0].message?.content ??
+                                    'Please reset and try again.');
                               },
                               child: Container(
                                 width: MediaQuery.of(context).size.width * 0.95,
@@ -545,14 +550,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                     Positioned.fill(
                                       child: Align(
                                         alignment: Alignment.center,
-                                        child:
-                                        Image.asset("assets/images/app-icon-black-bg.png",
-                                        height: MediaQuery.of(context)
-                                            .size
-                                            .width *
-                                            0.3,
-                                        )
-                                        /* Icon(
+                                        child: Icon(
                                           isPlaying
                                               ? Icons.pause
                                               : Icons.play_arrow,
@@ -561,28 +559,28 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                   .size
                                                   .width *
                                               0.3,
-                                        ),*/
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
                             ),
-                            if (/*!(ttsState == TtsState.playing)*/ false) ...[
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30.0, vertical: 40),
-                                child: Text(
-                                  "Tap play button to listen answer",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.white),
-                                ),
-                              ),
-                            ],
-                            if (/*(ttsState == TtsState.playing)*/ false) ...[
+                            // if (!(ttsState == TtsState.playing)) ...[
+                            //   Padding(
+                            //     padding: const EdgeInsets.symmetric(
+                            //         horizontal: 30.0, vertical: 40),
+                            //     child: Text(
+                            //       "Tap play button to listen answer",
+                            //       textAlign: TextAlign.center,
+                            //       style: TextStyle(
+                            //           fontSize: 20,
+                            //           fontFamily: 'Poppins',
+                            //           color: Colors.white),
+                            //     ),
+                            //   ),
+                            // ],
+                            if ((ttsState == TtsState.playing)) ...[
                               Column(
                                 children: [
                                   Padding(

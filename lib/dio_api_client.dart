@@ -18,7 +18,7 @@ class DioResponse {
     dio.options.headers['Content-Type'] = 'application/json';
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers['Authorization'] =
-        'Bearer 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';
+        'Bearer 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';
     print(Constant.token);
 
     // ProgressDialogUtils.showProgressDialog();
@@ -64,7 +64,7 @@ class DioResponse {
     dio.options.headers['Accept'] = 'application/json';
     // if (Constant.token != "") {
     dio.options.headers['Authorization'] =
-        'Bearer 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';
+        'Bearer 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';
     // }
 
     try {
@@ -99,7 +99,7 @@ class DioResponse {
     dio.options.headers["Content-Type"] = "multipart/form-data";
     dio.options.headers["Connection"] = "Keep-Alive";
     dio.options.headers['Authorization'] =
-        'Bearer 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';
+        'Bearer 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';
     print("token");
     print(Constant.token);
 
@@ -133,7 +133,7 @@ class DioResponse {
     dio.options.headers['Content-Type'] = 'application/json';
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers['Authorization'] =
-        'Bearer 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';
+        'Bearer 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';
     final response = await dio.post(
       api,
       data: data,
@@ -152,7 +152,7 @@ class DioResponse {
     dio.options.headers['Content-Type'] = 'application/json';
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers['Authorization'] =
-        'Bearer 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';
+        'Bearer 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';
     print("token");
     print(Constant.token);
     print(api);
@@ -200,7 +200,7 @@ class DioExceptions implements Exception {
     dio.options.headers['Content-Type'] = 'application/json';
     dio.options.headers['Accept'] = 'application/json';
     dio.options.headers['Authorization'] =
-        'Bearer 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';
+        'Bearer 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';
     try {
       final response = await dio.put(api, data: data);
       return response;
@@ -226,7 +226,7 @@ class DioExceptions implements Exception {
     dio.options.headers['Accept'] = 'application/json';
 
     dio.options.headers['Authorization'] =
-        'Bearer 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';
+        'Bearer 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';
 
     try {
       final response = await dio.delete(api);

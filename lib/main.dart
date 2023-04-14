@@ -2,16 +2,35 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:Botinfo/chat_screen2.dart';
 import 'package:Botinfo/constants.dart';
+import 'package:Botinfo/in.dart';
+import 'package:app_review/app_review.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:package_info/package_info.dart';
 
 import 'chat_screen.dart';
+import 'inapppurchases.dart';
 
 void main() {
   HttpOverrides.global = MyHttpOverrides();
+  if (!kIsWeb) _setTargetPlatformForDesktop();
 
-  runApp(MyApp());
+  return runApp(MyApp());
+}
+
+void _setTargetPlatformForDesktop() {
+  TargetPlatform? targetPlatform;
+  if (Platform.isMacOS) {
+    targetPlatform = TargetPlatform.iOS;
+  } else if (Platform.isLinux || Platform.isWindows) {
+    targetPlatform = TargetPlatform.android;
+  }
+  if (targetPlatform != null) {
+    debugDefaultTargetPlatformOverride = targetPlatform;
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -87,7 +106,32 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class SecondScreen extends StatelessWidget {
+class SecondScreen extends StatefulWidget {
+  @override
+  State<SecondScreen> createState() => _SecondScreenState();
+}
+
+class _SecondScreenState extends State<SecondScreen> {
+  String _appId = '';
+
+  @override
+  void initState() {
+    super.initState();
+    AppReview.getAppID.then(log);
+
+    _getAppId();
+  }
+
+  Future<void> _getAppId() async {
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      _appId = packageInfo.packageName;
+    });
+  }
+
+  String appID = "";
+
+  String output = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,8 +180,12 @@ class SecondScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // Get.to(ChatScreen());
+                      print("*************APPPID****${_appId}");
+
                       Get.to(ChatScreen());
+
+                      // Get.to(InAppPurchases());
+                      // Get.to(ChatScreen2());
                     },
                     child: Container(
                       height: 50.0,
@@ -161,7 +209,33 @@ class SecondScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    height: 100.0,
+                    height: 50.0,
+                  ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     print("*****${AppReview.requestReview.then(log)}");
+                  //     print("**l***${log}");
+                  //     print("**a***${appID}");
+                  //     print("**o***${output}");
+                  //
+                  //     if (output == "Success: true") {
+                  //       AppReview.storeListing.then(log);
+                  //
+                  //       print("(****)");
+                  //     } else {
+                  //       AppReview.requestReview.then(log);
+                  //     }
+                  //   },
+                  //   child: Container(
+                  //       child: Text('RATE US',
+                  //           style: TextStyle(
+                  //             fontSize: 15.0,
+                  //             fontFamily: 'Poppins',
+                  //             color: Colors.white,
+                  //           ))),
+                  // ),
+                  SizedBox(
+                    height: 50.0,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -187,6 +261,15 @@ class SecondScreen extends StatelessWidget {
             ),
           ),
         ));
+  }
+
+  void log(String? message) {
+    if (message != null) {
+      setState(() {
+        output = message;
+      });
+      print(message);
+    }
   }
 }
 
