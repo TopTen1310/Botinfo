@@ -52,9 +52,16 @@ class AppDrawer extends StatelessWidget {
                 },
                 name: "Terms of Service"),
             const Spacer(),
-            Text("Version: ${Get.find<PurchaseController>().appVersion.value}"),
+            Center(
+                child: Text(
+              "Version: ${Get.find<PurchaseController>().appVersion.value}",
+              style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xff006FFF)),
+            )),
             const SizedBox(
-              height: 50,
+              height: 40,
             )
           ],
         ),
