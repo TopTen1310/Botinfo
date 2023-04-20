@@ -49,7 +49,7 @@ class PremiumFeaturesList extends StatelessWidget {
                       width: 19,
                     ),
                   ),
-                  const Text('Highet Word Limit',
+                  const Text('Highest Word Limit',
                       style: TextStyle(
                         fontSize: 15.0,
                         fontFamily: 'Poppins',

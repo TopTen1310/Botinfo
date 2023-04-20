@@ -34,6 +34,8 @@
 	<string>Main</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>recognize speech</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Need microphone access for uploading audio</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

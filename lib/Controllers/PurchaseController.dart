@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:Botinfo/dio_api_client.dart';
 import 'package:get/get.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 enum SubscriptionTypes {
   Weekly("com.botinfo.app.weeklySubscription"),
@@ -16,17 +17,26 @@ enum SubscriptionTypes {
 
 class PurchaseController extends GetxController {
   RxBool isLoading = false.obs;
-
+  RxBool alreadySubscribed = true.obs;
   Rx<SubscriptionTypes> selectedSubscriptionType = SubscriptionTypes.Weekly.obs;
+  Rxn<SubscriptionTypes> currentSubscription = Rxn();
 
+  RxString appVersion = "".obs;
   final Set<String> _kIds = <String>{
     'com.botinfo.app.weeklySubscription',
     'com.botinfo.app.yearly'
   };
+
+  // Lists
+  RxList<PurchaseDetails> restorePurchase = <PurchaseDetails>[].obs;
   RxList<ProductDetails> products = <ProductDetails>[].obs;
+
   late StreamSubscription<List<PurchaseDetails>> _subscription;
+
   @override
   Future<void> onInit() async {
+    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    appVersion.value = packageInfo.version;
     final Stream<List<PurchaseDetails>> purchaseUpdated =
         InAppPurchase.instance.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
@@ -37,6 +47,7 @@ class PurchaseController extends GetxController {
       // handle error here.
     });
     await getProductsList();
+    // await restoreUserPurchase();
 
     super.onInit();
   }
@@ -82,6 +93,13 @@ class PurchaseController extends GetxController {
               name: "Purchase error details");
         } else if (purchaseDetails.status == PurchaseStatus.purchased ||
             purchaseDetails.status == PurchaseStatus.restored) {
+          // if we have called restore purchase then we will get all the previus purchases
+          if (purchaseDetails.status == PurchaseStatus.restored) {
+            restorePurchase.value = purchaseDetailsList;
+            for (var element in restorePurchase) {
+              log(element.status.name, name: element.productID);
+            }
+          }
           bool valid = true; //await _verifyPurchase(purchaseDetails);
           if (valid) {
             log("Purchase valid");
@@ -118,7 +136,13 @@ class PurchaseController extends GetxController {
     return Future<bool>.value(true);
   }
 
-  // Future<void> restoreUserPurchase()async{
-  //   InAppPurchase.instance.
-  // }
+  Future<void> restoreUserPurchase() async {
+    isLoading.value = true;
+    try {
+      await InAppPurchase.instance.restorePurchases();
+    } catch (err) {
+      log("", error: err.toString(), name: "restore error");
+    }
+    isLoading.value = false;
+  }
 }

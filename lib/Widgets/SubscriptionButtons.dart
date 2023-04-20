@@ -8,11 +8,13 @@ class SubscriptionButtons extends GetView<PurchaseController> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      
-      Obx(
+    return Column(
+      children: [
+        Obx(
           () => SubscriptionPlanButton(
             buttonText: "3 days free trial",
+            currentPurchase: controller.currentSubscription.value ==
+                SubscriptionTypes.FreeTrial,
             onTap: () {
               controller.selectedSubscriptionType.value =
                   SubscriptionTypes.FreeTrial;
@@ -21,8 +23,13 @@ class SubscriptionButtons extends GetView<PurchaseController> {
                 SubscriptionTypes.FreeTrial,
           ),
         ),
-      Obx(
+        const SizedBox(
+          height: 16,
+        ),
+        Obx(
           () => SubscriptionPlanButton(
+            currentPurchase: controller.currentSubscription.value ==
+                SubscriptionTypes.Weekly,
             buttonText: "${controller.products[0].price}/week",
             onTap: () {
               controller.selectedSubscriptionType.value =
@@ -36,6 +43,8 @@ class SubscriptionButtons extends GetView<PurchaseController> {
           height: 16,
         ),
         Obx(() => SubscriptionPlanButton(
+              currentPurchase:
+                  true, //controller.currentSubscription.value == SubscriptionTypes.Yearly,
               onTap: () {
                 controller.selectedSubscriptionType.value =
                     SubscriptionTypes.Yearly;
@@ -45,6 +54,7 @@ class SubscriptionButtons extends GetView<PurchaseController> {
               isBestSeller: true,
               buttonText: "${controller.products[1].price}/year",
             )),
-    ],);
+      ],
+    );
   }
 }

@@ -4,14 +4,11 @@ import 'dart:async';
 import 'dart:io';
 import 'package:Botinfo/Controllers/PurchaseController.dart';
 import 'package:Botinfo/Controllers/TermsAndConditionController.dart';
-import 'package:Botinfo/TermsAndConditionsScreen.dart';
-import 'package:app_review/app_review.dart';
+import 'package:Botinfo/SecondScreen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-
-import 'InAppPurchaseScreen.dart';
 
 void main() {
   HttpOverrides.global = MyHttpOverrides();
@@ -40,8 +37,18 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       title: 'Splash Screen',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+          primarySwatch: Colors.blue,
+          appBarTheme: AppBarTheme(
+            systemOverlayStyle: SystemUiOverlayStyle(
+              // Status bar color
+              statusBarColor: Colors.red,
+
+              // Status bar brightness (optional)
+              statusBarIconBrightness:
+                  Brightness.dark, // For Android (dark icons)
+              statusBarBrightness: Brightness.light, // For iOS (dark icons)
+            ),
+          )),
       home: MyHomePage(),
       debugShowCheckedModeBanner: false,
     );
@@ -109,176 +116,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
-  }
-}
-
-class SecondScreen extends StatefulWidget {
-  const SecondScreen({super.key});
-
-  @override
-  State<SecondScreen> createState() => _SecondScreenState();
-}
-
-class _SecondScreenState extends State<SecondScreen> {
-  String _appId = '';
-
-  @override
-  void initState() {
-    super.initState();
-    AppReview.getAppID.then(log);
-
-    _getAppId();
-  }
-
-  Future<void> _getAppId() async {
-    final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    setState(() {
-      _appId = packageInfo.packageName;
-    });
-  }
-
-  String appID = "";
-
-  String output = "";
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.black,
-        body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 0.0),
-              child: Column(
-                children: [
-                  Spacer(),
-                  Image.asset('assets/images/small-robot.png'),
-                  SizedBox(height: 15.0),
-                  RichText(
-                      text: TextSpan(
-                          text: 'Welcome to ',
-                          style: TextStyle(fontSize: 20.0),
-                          children: [
-                        TextSpan(
-                          text: 'BOTINFO',
-                          style: TextStyle(
-                              color: Color.fromRGBO(0, 111, 255, 1),
-                              fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text: ', the most',
-                          style: TextStyle(color: Colors.white),
-                        )
-                      ])),
-                  RichText(
-                      text: TextSpan(
-                          text: 'advanced language model at',
-                          style: TextStyle(fontSize: 20.0),
-                          children: [
-                        // TextSpan(text: 'advanced language model at your fingertips')
-                      ])),
-                  RichText(
-                      text: TextSpan(
-                          text: ' your fingertips',
-                          style: TextStyle(fontSize: 20.0),
-                          children: [
-                        // TextSpan(text: 'advanced language model at your fingertips')
-                      ])),
-                  SizedBox(
-                    height: 45.0,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      if (Get.find<TermsAndConditionController>()
-                          .alreadyAgreed
-                          .value) {
-                        Get.to(() => InAppPurchaseScreen());
-                      } else {
-                        Get.to(() => TermsAndConditionsScreen());
-                      }
-                    },
-                    child: Container(
-                      height: 50.0,
-                      width: 200.0,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Color.fromRGBO(0, 111, 255, 1),
-                        ),
-                        color: Color.fromRGBO(0, 111, 255, 1),
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                      ),
-                      child: Center(
-                          child: Text(
-                        'GET STARTED',
-                        style: TextStyle(
-                            fontSize: 15.0,
-                            fontFamily: 'Poppins',
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      )),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 50.0,
-                  ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     print("*****${AppReview.requestReview.then(log)}");
-                  //     print("**l***${log}");
-                  //     print("**a***${appID}");
-                  //     print("**o***${output}");
-                  //
-                  //     if (output == "Success: true") {
-                  //       AppReview.storeListing.then(log);
-                  //
-                  //       print("(****)");
-                  //     } else {
-                  //       AppReview.requestReview.then(log);
-                  //     }
-                  //   },
-                  //   child: Container(
-                  //       child: Text('RATE US',
-                  //           style: TextStyle(
-                  //             fontSize: 15.0,
-                  //             fontFamily: 'Poppins',
-                  //             color: Colors.white,
-                  //           ))),
-                  // ),
-                  SizedBox(
-                    height: 50.0,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/app-icon-black-bg.png',
-                        height: 20.0,
-                      ),
-                      SizedBox(
-                        width: 5.0,
-                      ),
-                      Text('BOTINFO',
-                          style: TextStyle(
-                            fontSize: 15.0,
-                            fontFamily: 'Poppins',
-                            color: Colors.white,
-                          ))
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                ],
-              ),
-            ),
-          ),
-        ));
-  }
-
-  void log(String? message) {
-    if (message != null) {
-      setState(() {
-        output = message;
-      });
-      print(message);
-    }
   }
 }
 

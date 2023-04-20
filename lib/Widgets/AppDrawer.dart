@@ -1,3 +1,4 @@
+import 'package:Botinfo/Controllers/PurchaseController.dart';
 import 'package:Botinfo/InAppPurchaseScreen.dart';
 import 'package:Botinfo/PrivacyPolicyScreen.dart';
 import 'package:Botinfo/TermsAndConditionsScreen.dart';
@@ -45,9 +46,16 @@ class AppDrawer extends StatelessWidget {
                 name: "Privacy & Policy"),
             NavButtons(
                 onTap: () {
-                  Get.to(() => const TermsAndConditionsScreen());
+                  Get.to(() => const TermsAndConditionsScreen(
+                        showBackButton: true,
+                      ));
                 },
                 name: "Terms of Service"),
+            const Spacer(),
+            Text("Version: ${Get.find<PurchaseController>().appVersion.value}"),
+            const SizedBox(
+              height: 50,
+            )
           ],
         ),
       ),

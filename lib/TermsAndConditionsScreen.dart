@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TermsAndConditionsScreen extends GetView<TermsAndConditionController> {
-  const TermsAndConditionsScreen({super.key});
-
+  const TermsAndConditionsScreen({super.key,this.showBackButton = false});
+  final bool showBackButton;
   @override
   Widget build(BuildContext context) {
     Get.put(TermsAndConditionController());
@@ -17,7 +17,7 @@ class TermsAndConditionsScreen extends GetView<TermsAndConditionController> {
         appBar: AppBar(
           backgroundColor: Colors.black,
           leading: Visibility(
-            visible: !controller.alreadyAgreed.value,
+            visible: showBackButton,
             child: IconButton(
               icon: const Icon(
                 Icons.arrow_back_ios,
@@ -49,55 +49,63 @@ class TermsAndConditionsScreen extends GetView<TermsAndConditionController> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 46.0, bottom: 20, top: 10),
-              child: Obx(() => AppCheckBox(
-                    text: "Terms of Service",
-                    onTextTap: () {},
-                    isSelected: controller.agreeTandC.value,
-                    onTap: () {
-                      controller.agreeTandC.value =
-                          !controller.agreeTandC.value;
+            Visibility(
+              visible: !controller.alreadyAgreed.value,
+              child: Column(
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 46.0, bottom: 20, top: 10),
+                    child: Obx(() => AppCheckBox(
+                          text: "Terms of Service",
+                          onTextTap: () {},
+                          isSelected: controller.agreeTandC.value,
+                          onTap: () {
+                            controller.agreeTandC.value =
+                                !controller.agreeTandC.value;
+                          },
+                        )),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 46.0, bottom: 28),
+                    child: Obx(
+                      () => AppCheckBox(
+                        onTextTap: () {
+                          Get.to(() => const PrivacyPolicyScreen());
+                        },
+                        text: "Privacy policy",
+                        isSelected: controller.agreePrivacy.value,
+                        onTap: () {
+                          controller.agreePrivacy.value =
+                              !controller.agreePrivacy.value;
+                        },
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      await controller.storeToLocal();
                     },
-                  )),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 46.0, bottom: 28),
-              child: Obx(
-                () => AppCheckBox(
-                  onTextTap: () {
-                    Get.to(() => const PrivacyPolicyScreen());
-                  },
-                  text: "Privacy policy",
-                  isSelected: controller.agreePrivacy.value,
-                  onTap: () {
-                    controller.agreePrivacy.value =
-                        !controller.agreePrivacy.value;
-                  },
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () async {
-                await controller.storeToLocal();
-              },
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                width: double.infinity,
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: const BoxDecoration(
-                  color: Color(0xff006FFF),
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-                child: const Text("I ACCEPT",
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      letterSpacing: 1.5,
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    )),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      decoration: const BoxDecoration(
+                        color: Color(0xff006FFF),
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
+                      child: const Text("I ACCEPT",
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            letterSpacing: 1.5,
+                            fontFamily: 'Roboto',
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          )),
+                    ),
+                  )
+                ],
               ),
             )
           ],

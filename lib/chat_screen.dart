@@ -2,7 +2,9 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:Botinfo/Controllers/PurchaseController.dart';
 import 'package:Botinfo/Widgets/AppDrawer.dart';
+import 'package:Botinfo/Widgets/CancelSubscriptionPopUp.dart';
 import 'package:lottie/lottie.dart';
 import '/constants.dart';
 import '/dio_api_client.dart';
@@ -342,378 +344,388 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       drawer: AppDrawer(),
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      _scaffoldKey.currentState!.openDrawer();
-                    },
-                    child: Image.asset(
-                      'assets/images/menu.png',
-                      height: 12,
-                    ),
-                  ),
-                  Spacer(),
-                  Image.asset(
-                    'assets/images/app-icon-black-bg.png',
-                    height: 25.0,
-                  ),
-                  SizedBox(
-                    width: 5.0,
-                  ),
-                  Text(
-                    'BOTINFO',
-                    style: TextStyle(
-                      fontSize: 25.0,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Spacer(),
-                  SizedBox(
-                    width: 20,
-                    height: 12,
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  physics: ClampingScrollPhysics(),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: (isListing)
-                        ? MainAxisAlignment.start
-                        : MainAxisAlignment.center,
-                    children: [
-                      Visibility(
-                        visible: !(ttsState == TtsState.playing ||
-                            ttsState == TtsState.stopped ||
-                            ttsState == TtsState.ready),
-                        child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: () async {
-                                setState(() {});
-
-                                if (ttsState == TtsState.playing) {
-                                  return;
-                                }
-
-                                if (_isTyping) {
-                                  return;
-                                }
-
-                                setState(() {});
-                                if (!isListing) {
-                                  isListing = true;
-                                  _controller.reset();
-                                  _controller.forward();
-
-                                  if (_speechEnabled) {
-                                    setState(() {
-                                      isListing = true;
-                                      speechToText.listen(onResult: (result) {
-                                        setState(() {
-                                          textController.text =
-                                              result.recognizedWords;
-                                        });
-                                      });
-                                    });
-                                  }
-                                } else {
-                                  setState(() {
-                                    isListing = false;
-                                  });
-                                  _controller.reset();
-                                  speechToText.stop();
-                                  _controller.stop(canceled: false);
-                                  _sendMessage();
-                                }
-                                return;
-                              },
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.95,
-                                    height: MediaQuery.of(context).size.width *
-                                        0.95,
-                                    decoration: BoxDecoration(),
-                                    child: Lottie.asset(
-                                      'assets/images/mic.json',
-                                      controller: _controller,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.95,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                              0.95,
-                                      onLoaded: (composition) {
-                                        _controller.duration =
-                                            composition.duration;
-                                      },
-                                      animate: false,
-                                      repeat: true,
-                                    ),
-                                  ),
-                                  Positioned.fill(
-                                    child: Align(
-                                        alignment: Alignment.center,
-                                        child: Visibility(
-                                            visible: _isTyping,
-                                            child: Lottie.asset(
-                                              'assets/images/nwave.json',
-                                              controller: _nwavecontroller,
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.95,
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.95,
-                                              onLoaded: (composition) {
-                                                _nwavecontroller
-                                                  ..duration =
-                                                      composition.duration
-                                                  ..forward();
-                                              },
-                                              animate: false,
-                                              repeat: true,
-                                            ))),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (!isListing && !_isTyping) ...[
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30.0),
-                                child: Text(
-                                  "Tap on mic to record your question.",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.white),
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                      Visibility(
-                        visible: (ttsState == TtsState.playing ||
-                            ttsState == TtsState.stopped ||
-                            ttsState == TtsState.ready),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 20,
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                return;
-                                print("fhdskl");
-                                print("_isTyping");
-                                print(_isTyping);
-                                print(ttsState);
-                                print(ttsState == TtsState.stopped);
-                                if (_isTyping) {
-                                  return;
-                                }
-
-                                if (ttsState == TtsState.stopped) {
-                                  flutterTts.speak(
-                                      cm.value.choices?[0].message?.content ??
-                                          'Please reset and try again.');
-                                  return;
-                                }
-
-                                if (ttsState == TtsState.playing) {
-                                  flutterTts.stop();
-                                  return;
-                                }
-
-                                flutterTts.speak(
-                                    cm.value.choices?[0].message?.content ??
-                                        cm.value.choices?[0].message?.content ??
-                                        'Please reset and try again.');
-                              },
-                              child: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.95,
-                                height:
-                                    MediaQuery.of(context).size.width * 0.95,
-                                child: Stack(
-                                  children: [
-                                    Lottie.asset(
-                                      'assets/images/nwave.json',
-                                      controller: _nwavecontroller,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.95,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                              0.95,
-                                      onLoaded: (composition) {
-                                        _nwavecontroller
-                                          ..duration = composition.duration
-                                          ..forward();
-                                      },
-                                      animate: false,
-                                      repeat: true,
-                                    ),
-                                    Positioned.fill(
-                                      child: Align(
-                                          alignment: Alignment.center,
-                                          child: Image.asset(
-                                            "assets/images/app-icon-black-bg.png",
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.3,
-                                          )
-                                          /* Icon(
-                                          isPlaying
-                                              ? Icons.pause
-                                              : Icons.play_arrow,
-                                          color: Colors.white,
-                                          size: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.3,
-                                        ),*/
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            if (/*!(ttsState == TtsState.playing)*/ false) ...[
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30.0, vertical: 40),
-                                child: Text(
-                                  "Tap play button to listen answer",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: 'Poppins',
-                                      color: Colors.white),
-                                ),
-                              ),
-                            ],
-                            if (/*(ttsState == TtsState.playing)*/ false) ...[
-                              Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 25.0),
-                                    child: Text(
-                                      "Tap on pause button to pause answer",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontFamily: 'Poppins',
-                                          color: Colors.white),
-                                    ),
-                                  ),
-                                  Lottie.asset(
-                                    'assets/images/nnwave.json',
-                                    controller: _controllerListening,
-                                    width:
-                                        MediaQuery.of(context).size.width * 1,
-                                    height:
-                                        MediaQuery.of(context).size.width * 0.5,
-                                    onLoaded: (composition) {
-                                      _controllerListening
-                                        ..duration = composition.duration
-                                        ..forward();
-                                    },
-                                    animate: true,
-                                    repeat: true,
-                                  ),
-                                ],
-                              ),
-                            ],
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Visibility(
-                              visible: false,
-                              child: GestureDetector(
-                                onTap: () async {
-                                  await flutterTts.stop();
-                                  isListing = false;
-                                  _isTyping = false;
-                                  ttsState = TtsState.reset;
-                                  setState(() {});
-                                },
-                                child: Container(
-                                  height: 50.0,
-                                  width: 200.0,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
-                                  ),
-                                  child: Center(
-                                      child: Text(
-                                    'Reset',
-                                    style: TextStyle(
-                                        fontSize: 15.0,
-                                        fontFamily: 'Poppins',
-                                        color: Color.fromRGBO(0, 111, 255, 1),
-                                        fontWeight: FontWeight.bold),
-                                  )),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: 10.0),
-                      if (isListing) ...[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                          child: Text(
-                            "We are listening to your question. Tap again to submit question.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontFamily: 'Poppins',
-                                color: Colors.white),
-                          ),
-                        ),
-                      ],
-                      if (_isTyping) ...[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                          child: Text(
-                            "Wait, While we process your question and bring you the appropriate answer.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontFamily: 'Poppins',
-                                color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            _getBodyWidget(context),
+            Obx(() => Visibility(
+                visible:
+                    !Get.find<PurchaseController>().alreadySubscribed.value,
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(horizontal: 40),
+                  color: Color(0x99000000),
+                  height: double.infinity,
+                  width: double.infinity,
+                  child: CancelSubscriptionPopUp(),
+                )))
           ],
         ),
       ),
+    );
+  }
+
+  Column _getBodyWidget(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  _scaffoldKey.currentState!.openDrawer();
+                },
+                child: Image.asset(
+                  'assets/images/menu.png',
+                  height: 12,
+                ),
+              ),
+              Spacer(),
+              Image.asset(
+                'assets/images/app-icon-black-bg.png',
+                height: 25.0,
+              ),
+              SizedBox(
+                width: 5.0,
+              ),
+              Text(
+                'BOTINFO',
+                style: TextStyle(
+                  fontSize: 25.0,
+                  color: Colors.white,
+                ),
+              ),
+              Spacer(),
+              SizedBox(
+                width: 20,
+                height: 12,
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Center(
+            child: SingleChildScrollView(
+              physics: ClampingScrollPhysics(),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: (isListing)
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.center,
+                children: [
+                  Visibility(
+                    visible: !(ttsState == TtsState.playing ||
+                        ttsState == TtsState.stopped ||
+                        ttsState == TtsState.ready),
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () async {
+                            setState(() {});
+
+                            if (ttsState == TtsState.playing) {
+                              return;
+                            }
+
+                            if (_isTyping) {
+                              return;
+                            }
+
+                            setState(() {});
+                            if (!isListing) {
+                              isListing = true;
+                              _controller.reset();
+                              _controller.forward();
+
+                              if (_speechEnabled) {
+                                setState(() {
+                                  isListing = true;
+                                  speechToText.listen(onResult: (result) {
+                                    setState(() {
+                                      textController.text =
+                                          result.recognizedWords;
+                                    });
+                                  });
+                                });
+                              }
+                            } else {
+                              setState(() {
+                                isListing = false;
+                              });
+                              _controller.reset();
+                              speechToText.stop();
+                              _controller.stop(canceled: false);
+                              _sendMessage();
+                            }
+                            return;
+                          },
+                          child: Stack(
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.95,
+                                height:
+                                    MediaQuery.of(context).size.width * 0.95,
+                                decoration: BoxDecoration(),
+                                child: Lottie.asset(
+                                  'assets/images/mic.json',
+                                  controller: _controller,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.95,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.95,
+                                  onLoaded: (composition) {
+                                    _controller.duration = composition.duration;
+                                  },
+                                  animate: false,
+                                  repeat: true,
+                                ),
+                              ),
+                              Positioned.fill(
+                                child: Align(
+                                    alignment: Alignment.center,
+                                    child: Visibility(
+                                        visible: _isTyping,
+                                        child: Lottie.asset(
+                                          'assets/images/nwave.json',
+                                          controller: _nwavecontroller,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.95,
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.95,
+                                          onLoaded: (composition) {
+                                            _nwavecontroller
+                                              ..duration = composition.duration
+                                              ..forward();
+                                          },
+                                          animate: false,
+                                          repeat: true,
+                                        ))),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (!isListing && !_isTyping) ...[
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 30.0),
+                            child: Text(
+                              "Tap on mic to record your question.",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  Visibility(
+                    visible: (ttsState == TtsState.playing ||
+                        ttsState == TtsState.stopped ||
+                        ttsState == TtsState.ready),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 20,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            return;
+                            print("fhdskl");
+                            print("_isTyping");
+                            print(_isTyping);
+                            print(ttsState);
+                            print(ttsState == TtsState.stopped);
+                            if (_isTyping) {
+                              return;
+                            }
+
+                            if (ttsState == TtsState.stopped) {
+                              flutterTts.speak(
+                                  cm.value.choices?[0].message?.content ??
+                                      'Please reset and try again.');
+                              return;
+                            }
+
+                            if (ttsState == TtsState.playing) {
+                              flutterTts.stop();
+                              return;
+                            }
+
+                            flutterTts.speak(
+                                cm.value.choices?[0].message?.content ??
+                                    cm.value.choices?[0].message?.content ??
+                                    'Please reset and try again.');
+                          },
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.95,
+                            height: MediaQuery.of(context).size.width * 0.95,
+                            child: Stack(
+                              children: [
+                                Lottie.asset(
+                                  'assets/images/nwave.json',
+                                  controller: _nwavecontroller,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.95,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.95,
+                                  onLoaded: (composition) {
+                                    _nwavecontroller
+                                      ..duration = composition.duration
+                                      ..forward();
+                                  },
+                                  animate: false,
+                                  repeat: true,
+                                ),
+                                Positioned.fill(
+                                  child: Align(
+                                      alignment: Alignment.center,
+                                      child: Image.asset(
+                                        "assets/images/app-icon-black-bg.png",
+                                        height:
+                                            MediaQuery.of(context).size.width *
+                                                0.3,
+                                      )
+                                      /* Icon(
+                                        isPlaying
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
+                                        color: Colors.white,
+                                        size: MediaQuery.of(context)
+                                                .size
+                                                .width *
+                                            0.3,
+                                      ),*/
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (/*!(ttsState == TtsState.playing)*/ false) ...[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 30.0, vertical: 40),
+                            child: Text(
+                              "Tap play button to listen answer",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'Poppins',
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ],
+                        if (/*(ttsState == TtsState.playing)*/ false) ...[
+                          Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 25.0),
+                                child: Text(
+                                  "Tap on pause button to pause answer",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontFamily: 'Poppins',
+                                      color: Colors.white),
+                                ),
+                              ),
+                              Lottie.asset(
+                                'assets/images/nnwave.json',
+                                controller: _controllerListening,
+                                width: MediaQuery.of(context).size.width * 1,
+                                height: MediaQuery.of(context).size.width * 0.5,
+                                onLoaded: (composition) {
+                                  _controllerListening
+                                    ..duration = composition.duration
+                                    ..forward();
+                                },
+                                animate: true,
+                                repeat: true,
+                              ),
+                            ],
+                          ),
+                        ],
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Visibility(
+                          visible: false,
+                          child: GestureDetector(
+                            onTap: () async {
+                              await flutterTts.stop();
+                              isListing = false;
+                              _isTyping = false;
+                              ttsState = TtsState.reset;
+                              setState(() {});
+                            },
+                            child: Container(
+                              height: 50.0,
+                              width: 200.0,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(20)),
+                              ),
+                              child: Center(
+                                  child: Text(
+                                'Reset',
+                                style: TextStyle(
+                                    fontSize: 15.0,
+                                    fontFamily: 'Poppins',
+                                    color: Color.fromRGBO(0, 111, 255, 1),
+                                    fontWeight: FontWeight.bold),
+                              )),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  if (isListing) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Text(
+                        "We are listening to your question. Tap again to submit question.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'Poppins',
+                            color: Colors.white),
+                      ),
+                    ),
+                  ],
+                  if (_isTyping) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                      child: Text(
+                        "Wait, While we process your question and bring you the appropriate answer.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontFamily: 'Poppins',
+                            color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

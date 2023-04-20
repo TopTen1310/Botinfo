@@ -6,12 +6,14 @@ class SubscriptionPlanButton extends StatelessWidget {
       required this.onTap,
       required this.isSelected,
       this.isBestSeller = false,
+      required this.currentPurchase,
       required this.buttonText});
 
   final Function() onTap;
   final bool isSelected;
   final String buttonText;
   final bool isBestSeller;
+  final bool currentPurchase;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -43,7 +45,7 @@ class SubscriptionPlanButton extends StatelessWidget {
                   )),
             ),
             Visibility(
-              visible: isBestSeller,
+              visible: isBestSeller && !currentPurchase,
               child: Positioned(
                   right: 0,
                   bottom: 0,
@@ -51,12 +53,47 @@ class SubscriptionPlanButton extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                     decoration: const BoxDecoration(
-                        color: Colors.white,
+                        color: Color(0xff006FFF),
                         borderRadius: BorderRadius.only(
                             bottomRight: Radius.circular(25),
                             topLeft: Radius.circular(25))),
                     child: const Text(
                       "Best Seller",
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white),
+                    ),
+                  )),
+            ),
+            Visibility(
+                visible: currentPurchase,
+                child: const Positioned(
+                  right: 19,
+                  bottom: 7,
+                  child: Text(
+                    "Tap to cancel",
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xffEBEBEB)),
+                  ),
+                )),
+            Visibility(
+              visible: currentPurchase,
+              child: Positioned(
+                  right: 0,
+                  top: 0,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                    decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(25),
+                            topRight: Radius.circular(25))),
+                    child: const Text(
+                      "Subscribed",
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,

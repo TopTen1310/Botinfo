@@ -50,7 +50,7 @@ class _BodyWidget extends GetView<PurchaseController> {
                         width: (270),
                         child: Padding(
                             padding: EdgeInsets.all(0.0),
-                            child: Text('Welcome to BOTINFO',
+                            child: Text('Subscribed to BOTINFO',
                                 style: TextStyle(
                                   fontSize: 26.0,
                                   fontWeight: FontWeight.bold,
@@ -75,7 +75,7 @@ class _BodyWidget extends GetView<PurchaseController> {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(0, 5, 0, 21),
+                padding: const EdgeInsets.fromLTRB(0, 18, 0, 21),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
