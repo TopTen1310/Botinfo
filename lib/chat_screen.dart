@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:Botinfo/Widgets/AppDrawer.dart';
 import 'package:lottie/lottie.dart';
 import '/constants.dart';
 import '/dio_api_client.dart';
@@ -25,7 +26,7 @@ enum TtsState { playing, stopped, paused, continued, ready, reset }
 class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final TextEditingController textController = TextEditingController();
   final List<ChatMessage> _messages = [];
-  bool _isImageSearch = false;
+  final bool _isImageSearch = false;
   SpeechToText speechToText = SpeechToText();
   var text = 'Ask anything to Botinfo';
   late final AnimationController _controller;
@@ -94,14 +95,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       });
     }
 
-    flutterTts.setCompletionHandler(() async{
-        print("Complete");
-        ttsState = TtsState.stopped;
-        await flutterTts.stop();
-        isListing = false;
-        _isTyping = false;
-        ttsState = TtsState.reset;
-        setState(() {});
+    flutterTts.setCompletionHandler(() async {
+      print("Complete");
+      ttsState = TtsState.stopped;
+      await flutterTts.stop();
+      isListing = false;
+      _isTyping = false;
+      ttsState = TtsState.reset;
+      setState(() {});
     });
 
     flutterTts.setCancelHandler(() {
@@ -199,6 +200,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _scaffoldKey = GlobalKey<ScaffoldState>();
+
     ttsState = TtsState.reset;
 
     _initSpeech();
@@ -226,6 +229,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           _nwavecontroller.forward();
         }
       });
+    print('Init state completed');
   }
 
   void _initSpeech() async {
@@ -246,18 +250,18 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     //   "presence_penalty": 0.6,
     //   "stop": [" Human:", " AI:"]
     // };
-     
-  //   final response = await DioResponse.postApi(
-  //       'https://api.openai.com/v1/completions', jsonData2);
-  //   print("response 0000");
-  //   print(response);
-  //   if (response != null) {
-  //     cm.value = chatModel.fromJson(response.data);
-  //   } else {
-  //     cm.value = chatModel.fromJson({});
-  //   }
-  // }
-   var jsonData2 = {
+
+    //   final response = await DioResponse.postApi(
+    //       'https://api.openai.com/v1/completions', jsonData2);
+    //   print("response 0000");
+    //   print(response);
+    //   if (response != null) {
+    //     cm.value = chatModel.fromJson(response.data);
+    //   } else {
+    //     cm.value = chatModel.fromJson({});
+    //   }
+    // }
+    var jsonData2 = {
       "model": "gpt-3.5-turbo",
       "messages": [
         {
@@ -266,7 +270,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         }
       ]
     };
-   final response = await DioResponse.postApi(
+    final response = await DioResponse.postApi(
         'https://api.openai.com/v1/chat/completions', jsonData2);
 
     print("response 0000");
@@ -303,7 +307,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         cm.value.choices?[0].message?.content ?? 'Please reset and try again.');
     ttsState = TtsState.stopped;
     flutterTts.speak(
-        cm.value.choices?[0].message?.content  ??  'Please reset and try again.');
+        cm.value.choices?[0].message?.content ?? 'Please reset and try again.');
   }
 
   void insertNewData(String response, {bool isImage = false}) {
@@ -330,31 +334,52 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool isCurrentLanguageInstalled = false;
   String? _newVoiceText;
   int? _inputLength;
-
+  late GlobalKey<ScaffoldState> _scaffoldKey;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: AppDrawer(),
       backgroundColor: Colors.black,
       body: SafeArea(
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/images/app-icon-black-bg.png',
-                  height: 25.0,
-                ),
-                SizedBox(
-                  width: 5.0,
-                ),
-                Text('BOTINFO',
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      _scaffoldKey.currentState!.openDrawer();
+                    },
+                    child: Image.asset(
+                      'assets/images/menu.png',
+                      height: 12,
+                    ),
+                  ),
+                  Spacer(),
+                  Image.asset(
+                    'assets/images/app-icon-black-bg.png',
+                    height: 25.0,
+                  ),
+                  SizedBox(
+                    width: 5.0,
+                  ),
+                  Text(
+                    'BOTINFO',
                     style: TextStyle(
                       fontSize: 25.0,
                       color: Colors.white,
                     ),
-                )
-              ],
+                  ),
+                  Spacer(),
+                  SizedBox(
+                    width: 20,
+                    height: 12,
+                  ),
+                ],
+              ),
             ),
             Expanded(
               child: Center(
@@ -429,8 +454,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                           MediaQuery.of(context).size.width *
                                               0.95,
                                       onLoaded: (composition) {
-                                        _controller
-                                          ..duration = composition.duration;
+                                        _controller.duration =
+                                            composition.duration;
                                       },
                                       animate: false,
                                       repeat: true,
@@ -505,7 +530,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
                                 if (ttsState == TtsState.stopped) {
                                   flutterTts.speak(
-                                      cm.value.choices?[0].message?.content  ?? 
+                                      cm.value.choices?[0].message?.content ??
                                           'Please reset and try again.');
                                   return;
                                 }
@@ -517,10 +542,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
                                 flutterTts.speak(
                                     cm.value.choices?[0].message?.content ??
-                                    cm.value.choices?[0].message?.content  ??
+                                        cm.value.choices?[0].message?.content ??
                                         'Please reset and try again.');
                               },
-                              child: Container(
+                              child: SizedBox(
                                 width: MediaQuery.of(context).size.width * 0.95,
                                 height:
                                     MediaQuery.of(context).size.width * 0.95,
@@ -544,15 +569,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                     ),
                                     Positioned.fill(
                                       child: Align(
-                                        alignment: Alignment.center,
-                                        child:
-                                        Image.asset("assets/images/app-icon-black-bg.png",
-                                        height: MediaQuery.of(context)
-                                            .size
-                                            .width *
-                                            0.3,
-                                        )
-                                        /* Icon(
+                                          alignment: Alignment.center,
+                                          child: Image.asset(
+                                            "assets/images/app-icon-black-bg.png",
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.3,
+                                          )
+                                          /* Icon(
                                           isPlaying
                                               ? Icons.pause
                                               : Icons.play_arrow,
@@ -562,7 +587,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                                                   .width *
                                               0.3,
                                         ),*/
-                                      ),
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -697,7 +722,7 @@ class MyTooltip extends StatelessWidget {
   final Widget? child;
   final String? message;
 
-  MyTooltip({@required this.message, @required this.child});
+  const MyTooltip({super.key, @required this.message, @required this.child});
 
   @override
   Widget build(BuildContext context) {

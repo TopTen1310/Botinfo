@@ -1,11 +1,13 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/yogesh6013/Flutter/flutter
-FLUTTER_APPLICATION_PATH=/Users/yogesh6013/Botinfov2v
+FLUTTER_ROOT=/Users/mustafasidhpuri/Documents/development/flutter
+FLUTTER_APPLICATION_PATH=/Users/mustafasidhpuri/Company Projects/botinfo
 COCOAPODS_PARALLEL_CODE_SIGN=true
+FLUTTER_TARGET=/Users/mustafasidhpuri/Company Projects/botinfo/lib/main.dart
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=1.0.0
 FLUTTER_BUILD_NUMBER=1
+DART_DEFINES=RkxVVFRFUl9XRUJfQVVUT19ERVRFQ1Q9dHJ1ZQ==
 DART_OBFUSCATION=false
 TRACK_WIDGET_CREATION=true
 TREE_SHAKE_ICONS=false
-PACKAGE_CONFIG=.dart_tool/package_config.json
+PACKAGE_CONFIG=/Users/mustafasidhpuri/Company Projects/botinfo/.dart_tool/package_config.json

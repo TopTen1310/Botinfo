@@ -2,17 +2,16 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:Botinfo/chat_screen2.dart';
-import 'package:Botinfo/constants.dart';
-import 'package:Botinfo/in.dart';
+import 'package:Botinfo/Controllers/PurchaseController.dart';
+import 'package:Botinfo/Controllers/TermsAndConditionController.dart';
+import 'package:Botinfo/TermsAndConditionsScreen.dart';
 import 'package:app_review/app_review.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-import 'chat_screen.dart';
-import 'inapppurchases.dart';
+import 'InAppPurchaseScreen.dart';
 
 void main() {
   HttpOverrides.global = MyHttpOverrides();
@@ -34,6 +33,8 @@ void _setTargetPlatformForDesktop() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -48,6 +49,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -55,6 +58,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
+    Get.put(TermsAndConditionController());
+    Get.put(PurchaseController());
+
     super.initState();
     checkNewUser();
   }
@@ -107,6 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class SecondScreen extends StatefulWidget {
+  const SecondScreen({super.key});
+
   @override
   State<SecondScreen> createState() => _SecondScreenState();
 }
@@ -180,12 +188,13 @@ class _SecondScreenState extends State<SecondScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      print("*************APPPID****${_appId}");
-
-                      Get.to(ChatScreen());
-
-                      // Get.to(InAppPurchases());
-                      // Get.to(ChatScreen2());
+                      if (Get.find<TermsAndConditionController>()
+                          .alreadyAgreed
+                          .value) {
+                        Get.to(() => InAppPurchaseScreen());
+                      } else {
+                        Get.to(() => TermsAndConditionsScreen());
+                      }
                     },
                     child: Container(
                       height: 50.0,
