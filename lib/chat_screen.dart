@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:Botinfo/Controllers/PurchaseController.dart';
 import 'package:Botinfo/Widgets/AppDrawer.dart';
-import 'package:Botinfo/Widgets/CancelSubscriptionPopUp.dart';
+import 'package:Botinfo/Widgets/SubscribeNowPopUp.dart';
 import 'package:lottie/lottie.dart';
 import '/constants.dart';
 import '/dio_api_client.dart';
@@ -356,7 +356,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   color: Color(0x99000000),
                   height: double.infinity,
                   width: double.infinity,
-                  child: CancelSubscriptionPopUp(),
+                  child: SubScribeNowPopUp(),
                 )))
           ],
         ),

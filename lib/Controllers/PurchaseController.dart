@@ -17,7 +17,7 @@ enum SubscriptionTypes {
 
 class PurchaseController extends GetxController {
   RxBool isLoading = false.obs;
-  RxBool alreadySubscribed = true.obs;
+  RxBool alreadySubscribed = false.obs;
   Rx<SubscriptionTypes> selectedSubscriptionType = SubscriptionTypes.Weekly.obs;
   Rxn<SubscriptionTypes> currentSubscription = Rxn();
 
